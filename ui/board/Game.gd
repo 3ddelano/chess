@@ -1,6 +1,7 @@
 extends Control
 
 onready var status: StatusLabel = find_node("Status")
+onready var chat: Chat = find_node("Chat")
 onready var sidebar := $Holder/SidebarRight
 onready var panels := [
 	sidebar.whitepanel,
@@ -10,6 +11,12 @@ onready var panels := [
 
 func _ready() -> void:
 	PacketHandler.connect("info_recieved", self, "_spectate_info" if Globals.spectating else "_on_info")
+
+	# TODO: understand why this works
+	sidebar.visible = false
+	sidebar.call_deferred("set_visible", true)
+	chat.visible = false
+	chat.call_deferred("set_visible", true)
 
 
 func set_status(text: String, length := 5) -> void:
@@ -36,3 +43,8 @@ func _on_info(info: Dictionary) -> void:
 func set_panel(pnl, name, country) -> void:
 	pnl.set_name(name if name else "Anonymous")
 	pnl.set_flag(country)
+
+
+func _input(event):
+	if event is InputEventKey and event.pressed and event.scancode == KEY_Z:
+		chat.visible = !chat.visible
